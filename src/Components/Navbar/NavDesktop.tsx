@@ -100,7 +100,7 @@ export default function NavDesktop(props: Props) {
                   <IconButton
                     onClick={() => setTimeout(() => setShowSearch(false), 109)}
                   >
-                    <IoClose />
+                    <IoClose className="scale-150" />
                   </IconButton>
                 </div>
               </motion.div>
