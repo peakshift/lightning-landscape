@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { Hits, SearchBox } from "react-instantsearch-hooks-web";
+import { ReactNode, useState } from "react";
+import {
+  Hits,
+  SearchBox,
+  useInstantSearch,
+} from "react-instantsearch-hooks-web";
+
 import { Projects } from "src/graphql";
 import { openModal } from "react-url-modal";
 import { useDebouncedCallback } from "@react-hookz/web";
@@ -31,9 +36,19 @@ export default function Search() {
         queryHook={debouncedSearch}
       />
       {showSearchResults && (
-        <div className="absolute top-[calc(100%+16px)] w-[max(100%,360px)] bg-white border border-gray-200 p-16 rounded shadow-lg max-h-[400px] overflow-y-scroll">
-          <Hits hitComponent={Hit} />
-        </div>
+        <EmptyQueryBoundary fallback={null}>
+          <div className="absolute top-[calc(100%+16px)] w-[max(100%,360px)] bg-white border border-gray-200 p-16 rounded shadow-lg max-h-[400px] overflow-y-scroll">
+            <NoResultsBoundary
+              fallback={
+                <p className="text-center text-gray-600">
+                  No Results found here
+                </p>
+              }
+            >
+              <Hits hitComponent={Hit} />
+            </NoResultsBoundary>
+          </div>
+        </EmptyQueryBoundary>
       )}
     </div>
   );
@@ -81,3 +96,46 @@ function Hit({ hit }: { hit: SearchProject }) {
     </button>
   );
 }
+
+const NoResultsBoundary = ({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback: ReactNode;
+}) => {
+  const { results, indexUiState } = useInstantSearch();
+
+  const isQueryEmpty = !indexUiState.query;
+
+  if (isQueryEmpty) return null;
+
+  // The `__isArtificial` flag makes sure not to display the No Results message
+  // when no hits have been returned yet.
+  if (!results.__isArtificial && results.nbHits === 0) {
+    return (
+      <>
+        {fallback}
+        <div hidden>{children}</div>
+      </>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+const EmptyQueryBoundary = ({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback: ReactNode;
+}) => {
+  const { indexUiState } = useInstantSearch();
+
+  const isQueryEmpty = !indexUiState.query;
+
+  if (isQueryEmpty) return <>{fallback}</>;
+
+  return <>{children}</>;
+};
