@@ -18,39 +18,14 @@ import { withBasicProvider } from "src/utils/helperFunctions";
 import { ProjectsFiltersProvider, useProjectsFilters } from "./filters-context";
 import { setTheme } from "src/redux/features/ui.slice";
 import OgTags from "src/Components/OgTags/OgTags";
-import ErrorMessage from "src/Components/Errors/ErrorMessage/ErrorMessage";
-import { useExplorePageQuery, useGetFiltersQuery } from "src/graphql";
-import ProjectsGrid from "./ProjectsGrid/ProjectsGrid";
-import Categories, { Category } from "../../Components/Categories/Categories";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import Header from "./Header/Header";
-import Button from "src/Components/Button/Button";
-import { useAppDispatch } from "src/utils/hooks";
-import { openModal } from "src/redux/features/modals.slice";
-import { createAction } from "@reduxjs/toolkit";
-import { useReduxEffect } from "src/utils/hooks/useReduxEffect";
-import { NetworkStatus } from "@apollo/client";
-import { FiSliders } from "react-icons/fi";
-import { HiOutlineChevronDoubleDown } from "react-icons/hi";
-import { ProjectsFilters } from "./Filters/FiltersModal";
-import { useUpdateUrlWithFilters } from "./helpers";
-import { withBasicProvider } from "src/utils/helperFunctions";
-import { ProjectsFiltersProvider, useProjectsFilters } from "./filters-context";
-import { setTheme } from "src/redux/features/ui.slice";
-import OgTags from "src/Components/OgTags/OgTags";
 
 function ExplorePage() {
   const dispatch = useAppDispatch();
-  const dispatch = useAppDispatch();
 
-  const [canFetchMore, setCanFetchMore] = useState(true);
   const [canFetchMore, setCanFetchMore] = useState(true);
 
   const { filters, updateFilters } = useProjectsFilters();
-  const { filters, updateFilters } = useProjectsFilters();
 
-  useUpdateUrlWithFilters(filters);
-  const filtersQuery = useGetFiltersQuery();
   useUpdateUrlWithFilters(filters);
   const filtersQuery = useGetFiltersQuery();
 
@@ -62,22 +37,7 @@ function ExplorePage() {
         .map((c) => c!.id!) ?? []
     );
   }, [filtersQuery.data?.categoryList, filtersQuery.loading]);
-  const hiddenCategoriesIds = useMemo(() => {
-    if (filtersQuery.loading) return [];
-    return (
-      filtersQuery.data?.categoryList
-        ?.filter((c) => c?.isHidden)
-        .map((c) => c!.id!) ?? []
-    );
-  }, [filtersQuery.data?.categoryList, filtersQuery.loading]);
 
-  const { queryFilters, hasSearchFilters } = useMemo(
-    () =>
-      createQueryFilters(filters, {
-        hiddenCategoriesIds,
-      }),
-    [filters, hiddenCategoriesIds]
-  );
   const { queryFilters, hasSearchFilters } = useMemo(
     () =>
       createQueryFilters(filters, {
@@ -98,25 +58,7 @@ function ExplorePage() {
     },
     skip: filtersQuery.loading,
   });
-  const { data, networkStatus, error, fetchMore } = useExplorePageQuery({
-    variables: {
-      page: 1,
-      pageSize: PAGE_SIZE,
-      filter: queryFilters,
-    },
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
-      if ((data.projects?.length ?? 0) < PAGE_SIZE) setCanFetchMore(false);
-    },
-    skip: filtersQuery.loading,
-  });
 
-  const onFiltersUpdated = useCallback(
-    ({ payload }: typeof UPDATE_FILTERS_ACTION) => {
-      updateFilters(payload);
-    },
-    [updateFilters]
-  );
   const onFiltersUpdated = useCallback(
     ({ payload }: typeof UPDATE_FILTERS_ACTION) => {
       updateFilters(payload);
@@ -125,18 +67,11 @@ function ExplorePage() {
   );
 
   useReduxEffect(onFiltersUpdated, UPDATE_FILTERS_ACTION.type);
-  useReduxEffect(onFiltersUpdated, UPDATE_FILTERS_ACTION.type);
 
   useEffect(() => {
     dispatch(setTheme("light"));
   }, [dispatch]);
-  useEffect(() => {
-    dispatch(setTheme("light"));
-  }, [dispatch]);
 
-  useEffect(() => {
-    setCanFetchMore(true);
-  }, [filters]);
   useEffect(() => {
     setCanFetchMore(true);
   }, [filters]);
