@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import {
   Hits,
   SearchBox,
@@ -7,19 +7,23 @@ import {
 
 import { Projects } from "src/graphql";
 import { openModal } from "react-url-modal";
-import { useDebouncedCallback } from "@react-hookz/web";
+import { useClickOutside, useDebouncedCallback } from "@react-hookz/web";
 
 export default function Search() {
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null!);
 
   const debouncedSearch = useDebouncedCallback(
     (query: string, search: (v: string) => void) => search(query),
     [],
     300
   );
+  useClickOutside(searchContainerRef, () => {
+    // setTimeout(() => setShowSearchResults(false), 100);
+  });
 
   return (
-    <div className="relative grow max-w-[420px]">
+    <div className="relative grow max-w-[420px]" ref={searchContainerRef}>
       <SearchBox
         autoFocus
         placeholder="Search projects"
@@ -32,12 +36,11 @@ export default function Search() {
             "absolute left-16 top-1/2 -translate-y-1/2 -translate-x-1/2 text-body2",
         }}
         onFocus={() => setShowSearchResults(true)}
-        onBlur={() => setTimeout(() => setShowSearchResults(false), 100)}
         queryHook={debouncedSearch}
       />
       {showSearchResults && (
         <EmptyQueryBoundary fallback={null}>
-          <div className="absolute top-[calc(100%+16px)] w-[max(100%,360px)] bg-white border border-gray-200 p-16 rounded shadow-lg max-h-[400px] overflow-y-scroll">
+          <div className="absolute top-[calc(100%+16px)] w-[max(100%,360px)] bg-white border border-gray-200 p-16 rounded shadow-lg max-h-[400px] overflow-y-scroll no-scroll">
             <NoResultsBoundary
               fallback={
                 <p className="text-center text-gray-600">

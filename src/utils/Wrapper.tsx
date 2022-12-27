@@ -42,8 +42,8 @@ export const useWrapperSetup = () => {
 };
 
 const searchClient = algoliasearch(
-  "DSRCS0EZ0V",
-  "690c8ad6c43854d86243e9654fc84016"
+  "YPRTIWSIAM",
+  "85731af4a62e17a4dd17399c609731d5"
 );
 
 export default function Wrapper(props: any) {
