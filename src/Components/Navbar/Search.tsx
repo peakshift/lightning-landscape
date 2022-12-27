@@ -40,7 +40,7 @@ export default function Search() {
       />
       {showSearchResults && (
         <EmptyQueryBoundary fallback={null}>
-          <div className="absolute top-[calc(100%+16px)] w-[max(100%,360px)] bg-white border border-gray-200 p-16 rounded shadow-lg max-h-[400px] overflow-y-scroll no-scroll">
+          <div className="absolute top-[calc(100%+16px)] w-full bg-white border border-gray-200 p-16 rounded shadow-lg max-h-[400px] overflow-y-scroll no-scroll">
             <NoResultsBoundary
               fallback={
                 <p className="text-center text-gray-600">

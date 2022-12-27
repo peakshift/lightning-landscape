@@ -17,7 +17,7 @@ export default function NavDesktop(props: Props) {
   return (
     <nav className="py-12 w-full min-w-full relative">
       <div className="content-container">
-        <div className="flex gap-16 md:gap-24 lg:gap-64 items-center">
+        <div className="flex gap-16 md:gap-24 lg:gap-64 items-center text-body5 md:text-body4">
           <Link to="/">
             <h2 className="hover:text-primary-500 flex items-center gap-16">
               <svg
